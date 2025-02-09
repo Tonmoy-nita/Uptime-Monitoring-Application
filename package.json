@@ -3,16 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "cross-env NODE_ENV=staging nodemon index.js",
+    "production": "cross-env NODE_ENV=production nodemon index.js",
     "dev": "nodemon index.js"
   },
   "author": "Tonmoy",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^9.20.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.0.1",
