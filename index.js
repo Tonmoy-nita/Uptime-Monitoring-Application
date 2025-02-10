@@ -12,10 +12,37 @@ const data=require('./lib/data.js')
 
 
 const app={}
+//file write(directory name, file name , data ,callback)
 
-data.create("Tonmoy","tonu",{name : 'Tonmoy', message : 'I love my mother'},(err)=>{
+data.create("New Folder","file",{name : 'Your Name', message : 'I love my hometown'},(err)=>{
     console.log(err);
 })
+
+
+// file update(directory name,file name,type update existing or write on new, data,callback)
+
+// data.update("Folder","file","update existing",{country: 'India' ,ph_no : '+010000000'},(err)=>{
+//     console.log(err);
+// })
+
+
+
+// file read(directory name, file name )
+
+// data.read("Folder","file",(err)=>{
+//     console.log(err);
+// })
+
+
+
+
+//file delete (directory name,file name ,callback)
+
+data.delete("Folder","file",(err)=>{
+    console.log(err);
+})
+
+//delete existing file
 
 app.createServer =()=>{
     const server=http.createServer(app.handleReqRes) 
