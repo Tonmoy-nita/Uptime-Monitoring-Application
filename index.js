@@ -14,20 +14,20 @@ const data=require('./lib/data.js')
 const app={}
 //file write(directory name, file name , data ,callback)
 
-data.create("New Folder","file",{name : 'Your Name', message : 'I love my hometown'},(err)=>{
-    console.log(err);
-})
-
-
-// file update(directory name,file name,type update existing or write on new, data,callback)
-
-// data.update("Folder","file","update existing",{country: 'India' ,ph_no : '+010000000'},(err)=>{
+// data.create("New Folder","file",{name : 'Your Name', message : 'I love my hometown'},(err)=>{
 //     console.log(err);
 // })
 
 
+// file update(directory name,file name, data,callback)
 
-// file read(directory name, file name )
+data.update("user","1111111111",{country: 'India' ,ph_no : '+010000000'},(err)=>{
+    console.log(err);
+})
+
+
+
+// file read(directory name, file name , callback)
 
 // data.read("Folder","file",(err)=>{
 //     console.log(err);
@@ -38,7 +38,7 @@ data.create("New Folder","file",{name : 'Your Name', message : 'I love my hometo
 
 //file delete (directory name,file name ,callback)
 
-data.delete("Folder","file",(err)=>{
+data.delete("New Folder","file",(err)=>{
     console.log(err);
 })
 

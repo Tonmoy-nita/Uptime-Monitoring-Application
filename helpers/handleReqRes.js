@@ -7,6 +7,7 @@ const url = require('url')
 const {StringDecoder} = require('string_decoder')
 const routes =require('../router/routes.js')
 const {notFoundHandler} =require('../handlers/routeHandlers/notFoundHandlers.js')
+const {parseJSON}= require('./utilities.js')
 
 
 //module scarffolding
@@ -60,6 +61,7 @@ handler.handleReqRes = (req, res) => {
     // console.log(realData)
     req.on('end',()=>{
         realData +=decoder.end();
+        requestProperties.body = parseJSON(realData)
         chosenHandler(requestProperties ,(statusCode, payload)=>{
 
             statusCode = typeof(statusCode) === 'number' ? statusCode : 500
