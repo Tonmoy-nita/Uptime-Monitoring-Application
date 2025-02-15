@@ -28,6 +28,7 @@ handler.userHandler =(requestProperties, callback)=>{
 handler._user={}
 
 handler._user.get = (requestProperties, callback)=>{
+    //for get the information of the user you have to give phone number in the requested url header section in header.queryStringObject
     //check the phone number if valid
     const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
         requestProperties.queryStringObject.phone.trim().length === 10 ?
@@ -54,6 +55,7 @@ handler._user.get = (requestProperties, callback)=>{
 };
 
 handler._user.post = (requestProperties, callback) => {
+    //for posting details in a file you have to give information of firstName,lastName,phoneNo,password and tos Agreement all the needed creadentials in the request body section
     const firstName = typeof(requestProperties.body.firstName) === 'string' &&
         requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName.trim() : false;
 
@@ -107,6 +109,7 @@ handler._user.post = (requestProperties, callback) => {
 };
 
 handler._user.put = (requestProperties, callback) => {
+    //here all the details firstName,lastName,PhoneNo,password was received from requestd url body
     const firstName = typeof requestProperties.body.firstName === "string" &&
         requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName.trim() : false;
 
@@ -166,11 +169,39 @@ handler._user.put = (requestProperties, callback) => {
     }
 };
 
-module.exports = handler;
-
-
 handler._user.delete = (requestProperties, callback)=>{
-
+    //this check phone accepted from the requested url header section header.queryStringObject
+    const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
+        requestProperties.queryStringObject.phone.trim().length === 10 ?
+        requestProperties.queryStringObject.phone.trim() : false;
+    if(phone){
+        data.read('user',phone,(readErr,userdata)=>{
+            // const userData = {...parseJSON(data)}
+            if(!readErr && userdata){
+                data.delete('user',phone,(deleteErr)=>{
+                    if(!deleteErr){
+                        callback(200,{
+                            callback : 'file deleted successfully'
+                        })
+                    }
+                    else{
+                        callback(500,{
+                            error: 'File was not deleted due to server issue'
+                        })
+                    }
+                })
+            }else{
+                callback(500,{
+                    error : 'There was a problem in server side',
+                })
+            }
+        })
+    }
+    else{
+        callback(400,{
+            error:'Please check your creadential (like phone in your header querystring)'
+        })
+    }
 }
 
 
