@@ -49,7 +49,7 @@ handler.handleReqRes = (req, res) => {
     //url body or payload nniye kaj
     const decoder = new StringDecoder('utf-8')
     let realData =' '
-    console.log(trimmedPath)
+    // console.log(trimmedPath)
     const chosenHandler=routes[trimmedPath] ? routes[trimmedPath] : notFoundHandler
     // console.log(chosenHandler);
 
@@ -70,7 +70,7 @@ handler.handleReqRes = (req, res) => {
             const payloadString = JSON.stringify(payload);
     
             //return the final responce
-            console.log(realData)
+            // console.log(realData)
             res.writeHead(statusCode, { 'Content-Type': 'application/json' });
             res.end(payloadString);
         })

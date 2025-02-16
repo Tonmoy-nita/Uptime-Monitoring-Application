@@ -21,9 +21,9 @@ const app={}
 
 // file update(directory name,file name, data,callback)
 
-data.update("user","1111111111",{country: 'India' ,ph_no : '+010000000'},(err)=>{
-    console.log(err);
-})
+// data.update("user","1111111111",{country: 'India' ,ph_no : '+010000000'},(err)=>{
+//     console.log(err);
+// })
 
 
 
@@ -38,9 +38,9 @@ data.update("user","1111111111",{country: 'India' ,ph_no : '+010000000'},(err)=>
 
 //file delete (directory name,file name ,callback)
 
-data.delete("New Folder","file",(err)=>{
-    console.log(err);
-})
+// data.delete("New Folder","file",(err)=>{
+//     console.log(err);
+// })
 
 //delete existing file
 

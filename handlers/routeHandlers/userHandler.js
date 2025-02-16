@@ -6,6 +6,7 @@ const { last } = require("lodash")
 const data =require("../../lib/data.js")
 const {hash}=require('../../helpers/utilities.js')
 const {parseJSON}=require('../../helpers/utilities.js')
+const tokenHandler = require('./tokenHandler.js')
 
 
 
@@ -30,23 +31,44 @@ handler._user={}
 handler._user.get = (requestProperties, callback)=>{
     //for get the information of the user you have to give phone number in the requested url header section in header.queryStringObject
     //check the phone number if valid
-    const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
-        requestProperties.queryStringObject.phone.trim().length === 10 ?
-        requestProperties.queryStringObject.phone.trim() : false;
-    console.log(phone)
+            //if the request send from url header section queryString(id) then we use this method
+
+            const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
+            requestProperties.queryStringObject.phone.trim().length === 10 ?
+            requestProperties.queryStringObject.phone.trim() : false;
+    
+            //if the request send from body section then we use this method
+            /*
+            const phone = typeof requestProperties.body.phone === 'string' &&
+            requestProperties.body.phone.trim().length === 20 ?
+            requestProperties.body.phone.trim() : false;
+            */
+            
     if (phone) {
-        data.read('user', phone, (err, user) => {
-            if (!err && user) {
-                const userdetail = { ...parseJSON(user) };
-                delete userdetail.password;
-                callback(200, userdetail);
-            } else {
-                // console.log(err);
-                callback(404, {
-                    error: 'Requested user not found'
+        //verify token
+        let token = typeof(requestProperties.headersObject.token)==='string' ?
+        requestProperties.headersObject.token : false
+        tokenHandler._token.verify(token, phone, (tokenId)=>{
+            if(tokenId){
+                data.read('user', phone, (err, user) => {
+                    if (!err && user) {
+                        const userdetail = { ...parseJSON(user) };
+                        delete userdetail.password;
+                        callback(200, userdetail);
+                    } else {
+                        // console.log(err);
+                        callback(404, {
+                            error: 'Requested user not found'
+                        });
+                    }
                 });
             }
-        });
+            else{
+                callback(403,{
+                    error : 'You are not authenticated'
+                })
+            }
+        })    
     } else {
         callback(400, {
             error: 'Invalid phone number format!'
@@ -62,8 +84,8 @@ handler._user.post = (requestProperties, callback) => {
     const lastName = typeof(requestProperties.body.lastName) === 'string' &&
         requestProperties.body.lastName.trim().length > 0 ? requestProperties.body.lastName.trim() : false;
 
-    const phoneNo = typeof(requestProperties.body.phoneNo) === 'string' &&
-        requestProperties.body.phoneNo.trim().length === 10 ? requestProperties.body.phoneNo.trim() : false;
+    const phone = typeof(requestProperties.body.phone) === 'string' &&
+        requestProperties.body.phone.trim().length === 10 ? requestProperties.body.phone.trim() : false;
 
     const password = typeof(requestProperties.body.password) === 'string' &&
         requestProperties.body.password.trim().length > 0 ? requestProperties.body.password.trim() : false;
@@ -71,21 +93,21 @@ handler._user.post = (requestProperties, callback) => {
     const tosAgreement = typeof(requestProperties.body.tosAgreement) === 'boolean' ?
         requestProperties.body.tosAgreement : false;
 
-    if (firstName && lastName && phoneNo && password && tosAgreement) {
+    if (firstName && lastName && phone && password && tosAgreement) {
         // Check if user already exists
-        data.read('user', phoneNo, (readErr, user) => {
+        data.read('user', phone, (readErr, user) => {
             if (readErr) { // User does not exist (this is correct logic)
                 let userObject = {
                     firstName,
                     lastName,
-                    phoneNo,
+                    phone,
                     password: hash(password),
                     tosAgreement
                 };
 
                 // Store the user in the data file system
-                data.create('user', phoneNo, userObject, (createMessage) => {
-                    if (createMessage === 'File created successfully') {
+                data.create('user', phone, userObject, (createMessage) => {
+                    if (!createMessage) {
                         callback(200, {
                             message: 'User created successfully',
                         });
@@ -116,46 +138,57 @@ handler._user.put = (requestProperties, callback) => {
     const lastName = typeof requestProperties.body.lastName === "string" &&
         requestProperties.body.lastName.trim().length > 0 ? requestProperties.body.lastName.trim() : false;
 
-    const phoneNo = typeof requestProperties.body.phoneNo === "string" &&
-        requestProperties.body.phoneNo.trim().length === 10 ? requestProperties.body.phoneNo.trim() : false;
+    const phone = typeof requestProperties.body.phone === "string" &&
+        requestProperties.body.phone.trim().length === 10 ? requestProperties.body.phone.trim() : false;
 
     const password = typeof requestProperties.body.password === "string" &&
         requestProperties.body.password.trim().length > 0 ? requestProperties.body.password.trim() : false;
 
-    if (phoneNo) {
+    if (phone) {
         if(firstName || lastName || password){
-            data.read('user',phoneNo,(err1,user)=>{
-                const userData= {...parseJSON(user)}
-                if(!err1 && userData){
-                    if(firstName){
-                        userData.firstName=firstName
-                    }
-                    if(lastName){
-                        userData.lastName=lastName
-                    }
-                    if(password){
-                        userData.password=hash(password)
-                    }
-                    data.update('user',phoneNo,userData,(err2)=>{
-                        if(!err2){
-                            callback(200,{
-                                message: 'User updated successfully',
-                            })
+        let token = typeof(requestProperties.headersObject.token)==='string' ?
+        requestProperties.headersObject.token : false
+        tokenHandler._token.verify(token, phone, (tokenId)=>{
+            if(tokenId){
+                data.read('user',phone,(err1,user)=>{
+                    const userData= {...parseJSON(user)}
+                    if(!err1 && userData){
+                        if(firstName){
+                            userData.firstName=firstName
                         }
-                        else{
-                            callback(500, {
-                                error: 'There was a problem in server side',
-                            })
+                        if(lastName){
+                            userData.lastName=lastName
                         }
-                    })
-                }
-                else{
-                    callback(404,{
-                        error: 'User not found',
-                    })
-                }
-            })
-        }
+                        if(password){
+                            userData.password=hash(password)
+                        }
+                        data.update('user',phone,userData,(err2)=>{
+                            if(!err2){
+                                callback(200,{
+                                    message: 'User updated successfully',
+                                })
+                            }
+                            else{
+                                callback(500, {
+                                    error: 'There was a problem in server side',
+                                })
+                            }
+                        })
+                    }
+                    else{
+                        callback(404,{
+                            error: 'User not found',
+                        })
+                    }
+                })
+            }
+            else{
+                callback(403,{
+                    error : 'You are not authenticated'
+                })
+            }
+        })         
+    }
         else{
             callback(400,{
                 error: "You have a problem in your request",
@@ -171,31 +204,52 @@ handler._user.put = (requestProperties, callback) => {
 
 handler._user.delete = (requestProperties, callback)=>{
     //this check phone accepted from the requested url header section header.queryStringObject
-    const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
+        //if the request send from url header section queryString(id) then we use this method
+
+        const phone = typeof requestProperties.queryStringObject.phone === 'string' &&
         requestProperties.queryStringObject.phone.trim().length === 10 ?
         requestProperties.queryStringObject.phone.trim() : false;
+
+        //if the request send from body section then we use this method
+        /*
+        const phone = typeof requestProperties.body.phone === 'string' &&
+        requestProperties.body.phone.trim().length === 20 ?
+        requestProperties.body.phone.trim() : false;
+        */
     if(phone){
-        data.read('user',phone,(readErr,userdata)=>{
-            // const userData = {...parseJSON(data)}
-            if(!readErr && userdata){
-                data.delete('user',phone,(deleteErr)=>{
-                    if(!deleteErr){
-                        callback(200,{
-                            callback : 'file deleted successfully'
+        let token = typeof(requestProperties.headersObject.token)==='string' ?
+        requestProperties.headersObject.token : false
+        tokenHandler._token.verify(token, phone, (tokenId)=>{
+            if(tokenId){
+                data.read('user',phone,(readErr,userdata)=>{
+                    // const userData = {...parseJSON(data)}
+                    if(!readErr && userdata){
+                        data.delete('user',phone,(deleteErr)=>{
+                            if(!deleteErr){
+                                callback(200,{
+                                    callback : 'file deleted successfully'
+                                })
+                            }
+                            else{
+                                callback(500,{
+                                    error: 'File was not deleted due to server issue'
+                                })
+                            }
                         })
-                    }
-                    else{
+                    }else{
                         callback(500,{
-                            error: 'File was not deleted due to server issue'
+                            error : 'There was a problem in server side',
                         })
                     }
                 })
-            }else{
-                callback(500,{
-                    error : 'There was a problem in server side',
+            }
+            else{
+                callback(403,{
+                    error : 'You are not authenticated'
                 })
             }
         })
+        
     }
     else{
         callback(400,{
