@@ -6,12 +6,14 @@ environments.staging = {
     port: process.env.PORT1 || 3000, // যদি .env থেকে মান না পাওয়া যায়, তাহলে ডিফল্ট 3000
     envName: process.env.NODE_ENV1 || 'staging',
     secretKey : process.env.SECRET_KEY1 || 'secret',
+    maxChecks : process.env.MAX_CHECKS1 || 5,
 };
 
 environments.production = {
     port: process.env.PORT2 || 5000, // যদি .env থেকে মান না পাওয়া যায়, তাহলে ডিফল্ট 5000
     envName: process.env.NODE_ENV2 || 'production',
     secretKey : process.env.SECRET_KEY2 || 'secret',
+    maxChecks : process.env.MAX_CHECKS1 || 5,
 };
 
 // determine which environment was passed

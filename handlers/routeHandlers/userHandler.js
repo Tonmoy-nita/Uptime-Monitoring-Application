@@ -222,7 +222,7 @@ handler._user.delete = (requestProperties, callback)=>{
         tokenHandler._token.verify(token, phone, (tokenId)=>{
             if(tokenId){
                 data.read('user',phone,(readErr,userdata)=>{
-                    // const userData = {...parseJSON(data)}
+                    const userData = {...parseJSON(data)}
                     if(!readErr && userdata){
                         data.delete('user',phone,(deleteErr)=>{
                             if(!deleteErr){
