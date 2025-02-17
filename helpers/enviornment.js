@@ -7,6 +7,11 @@ environments.staging = {
     envName: process.env.NODE_ENV1 || 'staging',
     secretKey : process.env.SECRET_KEY1 || 'secret',
     maxChecks : process.env.MAX_CHECKS1 || 5,
+    twilio :{
+        fromPhone : process.env.FROM_PHONE,
+        accountSid : process.env.ACCOUNTSID,
+        authToken : process.env.AUTHTOKEN
+    }
 };
 
 environments.production = {
@@ -14,6 +19,11 @@ environments.production = {
     envName: process.env.NODE_ENV2 || 'production',
     secretKey : process.env.SECRET_KEY2 || 'secret',
     maxChecks : process.env.MAX_CHECKS1 || 5,
+    twilio :{
+        fromPhone : process.env.FROM_PHONE,
+        accountSid : process.env.ACCOUNTSID,
+        authToken : process.env.AUTHTOKEN
+    }
 };
 
 // determine which environment was passed

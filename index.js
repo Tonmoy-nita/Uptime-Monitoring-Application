@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const {handleReqRes} =require('./helpers/handleReqRes.js')
 const enviornment =require('./helpers/enviornment.js')
 const data=require('./lib/data.js')
+const {sendTwilioSms} = require('./helpers/notifications.js')
 
 // Load environment variables//.env config
 
@@ -43,6 +44,12 @@ const app={}
 // })
 
 //delete existing file
+
+
+sendTwilioSms(process.env.MYNUM,'হাল ছেড়ে দিও না, সময় যখন কঠিন, তখনই তোমার লড়াইয়ের আসল পরীক্ষা! আজকের কষ্ট, আগামী দিনের শক্তি।' ,(err)=>{
+    console.log('This is the error message',err);
+})
+
 
 app.createServer =()=>{
     const server=http.createServer(app.handleReqRes) 
