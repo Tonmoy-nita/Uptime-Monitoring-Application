@@ -1,18 +1,13 @@
-//Title :Uptime Monitoring Application
-//Description : A RESTFul API to monitoring up or down time of user definedlinks
+//Title :Uptime Monitoring Application Project Initial file
+//Description : INitial file to start the node server and the workers
 
 
-const http = require('http')
-const dotenv = require('dotenv');
-const {handleReqRes} =require('./helpers/handleReqRes.js')
-const enviornment =require('./helpers/enviornment.js')
-const data=require('./lib/data.js')
-const {sendTwilioSms} = require('./helpers/notifications.js')
+const server = require('./lib/server.js')
+const workers = require('./lib/worker.js')
 
-// Load environment variables//.env config
+const app = {};
 
 
-const app={}
 //file write(directory name, file name , data ,callback)
 
 // data.create("New Folder","file",{name : 'Your Name', message : 'I love my hometown'},(err)=>{
@@ -45,19 +40,22 @@ const app={}
 
 //delete existing file
 
+//@TODO - remove leter
+// sendTwilioSms(process.env.MYNUM,'হাল ছেড়ে দিও না, সময় যখন কঠিন, তখনই তোমার লড়াইয়ের আসল পরীক্ষা! আজকের কষ্ট, আগামী দিনের শক্তি।' ,(err)=>{
+//     console.log('This is the error message',err);
+// })
 
-sendTwilioSms(process.env.MYNUM,'হাল ছেড়ে দিও না, সময় যখন কঠিন, তখনই তোমার লড়াইয়ের আসল পরীক্ষা! আজকের কষ্ট, আগামী দিনের শক্তি।' ,(err)=>{
-    console.log('This is the error message',err);
-})
 
+app.init = () => {
+    //start the server 
 
-app.createServer =()=>{
-    const server=http.createServer(app.handleReqRes) 
-    server.listen(enviornment.port,()=>{
-        console.log(`Environment variable is ${enviornment.envName}`)
-        console.log(`listening to port ${enviornment.port}`)
-    })
+    server.init()
+
+    //start the workers
+
+    workers.init()
 }
 
-app.handleReqRes = handleReqRes;
-app.createServer();
+app.init();
+
+module.exports =app

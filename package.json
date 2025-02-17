@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=staging nodemon index.js",
-    "production": "cross-env NODE_ENV=production nodemon index.js",
-    "dev": "nodemon index.js"
+    "start": "cross-env NODE_ENV=staging nodemon server.js",
+    "production": "cross-env NODE_ENV=production nodemon server.js",
+    "dev": "nodemon server.js"
   },
   "author": "Tonmoy",
   "license": "ISC",
